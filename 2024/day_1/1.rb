@@ -1,13 +1,12 @@
 
 class Day1
-  def Day1.pt1
+  def Day1.pt1(lns)
     left = []
     right = []
-    Integer(gets).times {
-      line = gets
+    for line in lns do
       left.push(Integer(line.split("   ")[0]))
       right.push(Integer(line.split("   ")[1]))
-    }
+    end
     
     left.sort!
     right.sort!
@@ -20,14 +19,13 @@ class Day1
     total
   end
 
-  def Day1.pt2
+  def Day1.pt2(lns)
     left = []
     right = []
-    Integer(gets).times {
-      line = gets
+    for line in lns
       left.push(Integer(line.split("   ")[0]))
       right.push(Integer(line.split("   ")[1]))
-    }
+    end
     
     left.sort!
     right.sort!
@@ -42,7 +40,9 @@ class Day1
 end
 
 def main() 
-  puts Day1.pt1
+  lns = File.read("input.txt").lines
+  puts Day1.pt1 lns
+  puts Day1.pt2 lns
 end
 
 main
