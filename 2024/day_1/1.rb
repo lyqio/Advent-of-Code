@@ -42,11 +42,6 @@ class Day1
 end
 
 def main() 
-  file = File.new("input.txt", "r")
-  data = file.read
-  file.close
-
-  puts data
   puts Day1.pt1
 end
 
