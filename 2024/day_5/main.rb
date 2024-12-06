@@ -16,11 +16,9 @@ def part_1(lns)
     this_line = lns[q].split(',').map{|x| Integer(x.strip)}
     in_order = true
 
-    for c in (0..this_line.length-1) do
-      for j in (1..this_line.length-1) do
-        if rules.include?([this_line[j], this_line[j-1]]) then
-          in_order = false
-        end
+    for j in (1..this_line.length-1) do
+      if rules.include?([this_line[j], this_line[j-1]]) then
+        in_order = false
       end
     end
     
