@@ -29,24 +29,21 @@ def adjs(pos):
             yield 1, (cx+directions[cd][0], cy+directions[cd][1], cd)
 
 pq = []
-dist = {}
-for i in range(len(data)):
-    for q in range(len(data[0])):
-        dist[(i, q, 0)] = float("inf")
-        dist[(i, q, 1)] = float("inf")
-        dist[(i, q, 2)] = float("inf")
-        dist[(i, q, 3)] = float("inf")
-
 heappush(pq, (0, start))
-while len(pq) > 0:
-    dis, pos = heappop(pq)
-    (cx, cy, cd) = pos
-    if (cx, cy) == (ex, ey):
-        print(dis)
-        break
-    for d, adj, in adjs(pos):
-        if dis + d < dist[adj]:
-            dist[adj] = dis+d
-            heappush(pq, (dist[adj], adj))
+dists = {}
+for i in range(ex):
+    for q in range(ey):
+        dists[(i, q)] = float("inf")
 
-print(dist)
+dists[start] = 0
+while len(pq) > 0:
+    dist, pos = heappop(pq)
+    if pos == (ex, ey):
+        print(dist)
+        break
+    for d, adj in adjs(pos):
+        if dist + d < dists[adj]:
+            dists[adj] = dist+d
+            heappush(pq, (dists[adj], adj))
+
+print(dists[(ex, ey)])
