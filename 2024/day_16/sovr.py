@@ -1,44 +1,72 @@
-import copy, sys
-sys.setrecursionlimit(10000)
+import copy, sys, time
 
 data = open("input.txt", "r").read().split('\n')
 
 start = (0, 0)
+end = (0, 0)
 for i in range(len(data)):
     for q in range(len(data[0])):
         if data[i][q] == 'S':
             start = (i, q)
-            break
+        if data[i][q] == 'E':
+            end = (i, q)
 
+directions = {
+    (0, 1),
+    (0, -1),
+    (1, 0),
+    (-1, 0)
+}
 
-directions = [
-        (1, 0),
-        (-1, 0),
-        (0, 1),
-        (0, -1)
-    ]
+td = (0 ,1)
 
-explored_spaces = set()
-smallest = 10000000000
-def go(i, q, td, score, visited):
-    global smallest
-    global explored_spaces
+dist = {}
+unx = set()
+for i in range(len(data)):
+    for q in range(len(data[0])):
+        if data[i][q] == '#':
+            continue
 
-    print(i, q)
-    if (i, q) not in explored_spaces:
-        explored_spaces.add((i, q))
+        for d in directions:
+            dist[(i, q, d)] = float("inf")
+            unx.add((i, q, d))
 
-    visited.add((i, q, td))
-    if data[i][q] == 'E':
-        smallest = min(smallest, score)
-        return
+dist[(start[0], start[1], td)] = 0
 
+l = time.time()
+while len(unx) > 0:
+    if time.time()-l > 10:
+        print(len(unx))
+        l = time.time()
+
+    mn = float("inf")
+    u = ()
+    for i in unx:
+        if dist[i] <= mn:
+            mn = dist[i]
+            u = i
+    unx.remove(u)
+
+    td = u[2]
     for d in directions:
-        if data[i+d[0]][q+d[1]] != '#' and (i+d[0], q+d[1], d) not in visited:
-            if d == td:
-                go(i+d[0], q+d[1], d, score+1, copy.copy(visited))
-            else:
-                go(i+d[0], q+d[1], d, score+1001, copy.copy(visited))
+        if (u[0]+d[0], u[1]+d[1], d) not in unx or data[u[0]+d[0]][u[1]+d[1]] == '#':
+            continue
 
-go(start[0], start[1], (0, 1), 0, set())
-print(smallest)
+        v = (u[0]+d[0], u[1]+d[1], d)
+        if d == td:
+            alt = dist[u] + 1
+            if alt < dist[v]:
+                dist[v] = alt
+        elif (d[0] == td[0] and d[1] == -td[1]) or (d[0] == -td[0] and d[1] == td[1]):
+            alt = dist[u] + 2001
+            if alt < dist[v]:
+                dist[v] = alt
+        else:
+            alt = dist[u] + 1001
+            if alt < dist[v]:
+                dist[v] = alt
+
+m = float("inf")
+for d in directions:
+    m = min(m, dist[(end[0], end[1], d)])
+print(m)
