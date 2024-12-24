@@ -21,11 +21,12 @@ for line in s.split('\n'):
 			d[fr] = [to]
 
 trips = set()
-for node, adjs in d.items():
-	for i in range(len(adjs)):
-		for q in range(len(adjs)):
-			if node.startswith('t') or adjs[i].startswith('t') or adjs[q].startswith('t') and (node != adjs[i] and node != adjs[q] and adjs[i] != adjs[q]):
-				trips.add(tuple(sorted((node, adjs[i], adjs[q]))))
+for vert, adj in d.items():
+	for i in range(len(adj)):
+		for q in range(i+1, len(adj)):
+			# print(vert, adj[i], adj[q])
+			if vert.startswith('t') or adj[i].startswith('t') or adj[q].startswith('t'):
+				if adj[i] in d[adj[q]] and vert in d[adj[q]] and adj[q] in d[adj[i]] and (adj[i] != adj[q] and adj[i] != vert):
+					trips.add(tuple(sorted([adj[i], adj[q], vert])))
 
-print(sorted(trips))
 print(len(trips))
