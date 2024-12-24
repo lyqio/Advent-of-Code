@@ -28,8 +28,6 @@ def solve(pattern):
 	else:
 		return cache[pattern]
 
-# print(solve("r, wr, b, g, bwu, rb, gb, br".split(", "), "brwrr"))
-
 cnt = 0
 for line in lines:
 	cnt += int(solve(line))

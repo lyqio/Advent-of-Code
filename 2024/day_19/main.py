@@ -8,7 +8,7 @@ segm = data.split("\n\n")
 towels = segm[0].split(', ')
 lines = segm[1].split('\n')
 
-def solve(towels, pattern):
+def solve(pattern):
 	if len(pattern) == 0:
 		return True
 
@@ -18,14 +18,12 @@ def solve(towels, pattern):
 		i += 1
 		subs += c
 		if subs in towels:
-			if solve(towels, copy.copy(pattern[i:])):
+			if solve(copy.copy(pattern[i:])):
 				return True
 
 	return False
 
-# print(solve("r, wr, b, g, bwu, rb, gb, br".split(", "), "brwrr"))
-
 cnt = 0
 for line in lines:
-	cnt += int(solve(towels, line))
+	cnt += int(solve(line))
 print(cnt)
