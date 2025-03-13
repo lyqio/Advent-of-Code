@@ -81,7 +81,6 @@ for i in range(len(s)):
         if s[i][q] != '#':
             continue
 
-
         s[i] = s[i][:q] + '.' + s[i][q+1:]
         del mp[(i, q)]
 

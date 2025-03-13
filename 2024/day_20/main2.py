@@ -1,7 +1,6 @@
 from heapq import heappush, heappop
 import copy, sys
 import time
-sys.setrecursionlimit(10000)
 
 
 fl = open("input.txt", "r")
@@ -21,82 +20,63 @@ for i in range(len(s)):
         if s[i][q] == '#':
             mp[(i, q)] = True
 
-def adjs(pos):
-    i, q = pos
-    if i-1 > -1 and (i-1, q) not in mp:
-        yield 1, (i-1, q)
-    if i+1 < len(s) and (i+1, q) not in mp:
-        yield 1, (i+1, q)
-    if q-1 > -1 and (i, q-1) not in mp:
-        yield 1, (i, q-1)
-    if q+1 < len(s) and (i, q+1) not in mp:
-        yield 1, (i, q+1)
-
-def cheat_adjs(pos):
-    i, q = pos
-    if i-1 > -1 and (i-1, q):
-        yield 1, (i-1, q)
-    if i+1 < len(s) and (i+1, q):
-        yield 1, (i+1, q)
-    if q-1 > -1 and (i, q-1):
-        yield 1, (i, q-1)
-    if q+1 < len(s) and (i, q+1):
-        yield 1, (i, q+1)
-
-pq = []
-heappush(pq, (0, start))
 dists = {}
-for i in range(len(s)):
-    for q in range(len(s)):
-        dists[(i, q)] = float("inf")
+prev = {}
+def go(data):
+    def adjs(pos):
+        i, q = pos
+        if i-1 > -1 and (i-1, q) not in mp:
+            yield 1, (i-1, q)
+        if i+1 < len(data) and (i+1, q) not in mp:
+            yield 1, (i+1, q)
+        if q-1 > -1 and (i, q-1) not in mp:
+            yield 1, (i, q-1)
+        if q+1 < len(data) and (i, q+1) not in mp:
+            yield 1, (i, q+1)
 
-base = None
-dists[start] = 0
-while len(pq) > 0:
-    dist, pos = heappop(pq)
-    if pos == (end[0], end[1]):
-        base = dist
-        break
-    for d, adj in adjs(pos):
-        if dist + d < dists[adj]:
-            dists[adj] = dist+d
-            heappush(pq, (dists[adj], adj))
 
-saved = set()
-DIST = 100
-cache = {}
-def dfs(i, q, cheat, visited, score):
-    if (i, q, cheat, score) in cache:
-        return cache[(i, q, cheat, score)]
+    pq = []
+    heappush(pq, (0, start))
 
-    global cnt
+    for i in range(len(data)):
+        for q in range(len(data)):
+            prev[(i, q)] = None
+            dists[(i, q)] = float("inf")
 
-    a = set()
-    visited.add((i, q))
-    if (i, q) == end:
-        if base-score >= DIST:
-            a.add((i, q, cheat, score))
-            return a
-        return a
+    dists[start] = 0
+    while len(pq) > 0:
+        dist, pos = heappop(pq)
+        if pos == (end[0], end[1]):
+            return dist, prev
+            break
+        for d, adj in adjs(pos):
+            if dist + d < dists[adj]:
+                dists[adj] = dist+d
+                prev[adj] = pos
+                heappush(pq, (dists[adj], adj))
 
-    if cheat == 0:
-        for sc, adj in adjs((i, q)):
-            if adj not in visited:
-                a = a | dfs(adj[0], adj[1], 0, copy.copy(visited), score+sc)
-    else:
-        for sc, adj in adjs((i, q)):
-            if cheat < 20:
-                if adj not in visited:
-                    a = a | dfs(adj[0], adj[1], 0, copy.copy(visited), score+sc)
-            else:
-                if adj not in visited:
-                    a = a | dfs(adj[0], adj[1], cheat, copy.copy(visited), score+sc)
+    return None
 
-        for sc, adj in cheat_adjs((i, q)):
-            if adj not in visited:
-                a = a | dfs(adj[0], adj[1], cheat-1, copy.copy(visited), score+sc)
 
-    cache[(i, q, cheat, score)] = a
-    return a
+path = set()
+def trace(start, end):
+    path.add(end)
+    while end != start:
+        end = prev[end]
+        if end == None:
+            return
+        path.add(end)
 
-print(len(dfs(start[0], start[1], 20, set(), 0)))
+dist = go(s)
+trace(start, end)
+
+cheats = set()
+for i in path:
+    x1, y1 = i
+    for q in path:
+        x2, y2 = q
+        if abs(x2-x1) + abs(y2-y1) <= 20 and (dists[i]-dists[q])-(abs(x2-x1) + abs(y2-y1)) >= 100:
+            if (q, i) not in cheats:
+                cheats.add((i, q))
+
+print(len(cheats))
